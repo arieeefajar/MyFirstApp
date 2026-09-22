@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 export default function ValidasiInputScreen() {
   const [email, setEmail] = useState("");
@@ -15,7 +22,7 @@ export default function ValidasiInputScreen() {
       return;
     }
     setError("");
-    // lanjutkan proses (misal: kirim ke server)
+    Alert.alert("Berhasil", `Email: ${email}`);
     console.log("Email valid:", email);
   };
 
