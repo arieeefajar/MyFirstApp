@@ -1,3 +1,4 @@
+import { useTheme } from "@/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -193,6 +194,20 @@ const LESSONS: LessonCategory[] = [
         type: "materi",
       },
       {
+        title: "Product List",
+        desc: "List produk & keranjang belanjaan",
+        path: "/03-state-management/productScreen",
+        icon: "pricetags-outline",
+        type: "materi",
+      },
+      {
+        title: "Keranjang Belanjaan",
+        desc: "Manajemen keranjang belanjaan dengan CartContext",
+        path: "/03-state-management/keranjangScreen",
+        icon: "cart-outline",
+        type: "materi",
+      },
+      {
         title: "Challenge: Book Favorite",
         desc: "Context global untuk menyimpan daftar favorit",
         path: "/03-state-management/bookListScreen",
@@ -236,6 +251,7 @@ const LESSONS: LessonCategory[] = [
 
 export default function HomeMenu() {
   const router = useRouter();
+  const { gelap, toggleTema } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
 
@@ -245,7 +261,7 @@ export default function HomeMenu() {
   const totalChallenges = LESSONS.reduce(
     (acc, cat) =>
       acc + cat.items.filter((item) => item.type === "challenge").length,
-    0
+    0,
   );
 
   // Filtered lessons based on category & search query
@@ -275,14 +291,17 @@ export default function HomeMenu() {
   }, [searchQuery, selectedFilter]);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
+    <SafeAreaView
+      style={[styles.safeArea, gelap && styles.safeAreaDark]}
+      edges={["top", "left", "right"]}
+    >
       <Stack.Screen options={{ headerShown: false }} />
       <StatusBar style="light" />
 
       {/* Hero Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, gelap && styles.headerDark]}>
         <View style={styles.headerTop}>
-          <View>
+          <View style={{ flex: 1 }}>
             <View style={styles.badgeWrapper}>
               <Ionicons name="sparkles" size={13} color="#FBBF24" />
               <Text style={styles.badgeText}>React Native Learning</Text>
@@ -292,6 +311,17 @@ export default function HomeMenu() {
               Jelajahi materi, latihan praktis, dan tantangan kode.
             </Text>
           </View>
+          <TouchableOpacity
+            onPress={toggleTema}
+            style={styles.themeToggle}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name={gelap ? "sunny" : "moon"}
+              size={20}
+              color={gelap ? "#FBBF24" : "#FFFFFF"}
+            />
+          </TouchableOpacity>
         </View>
 
         {/* Quick Stats Cards */}
@@ -313,7 +343,9 @@ export default function HomeMenu() {
         </View>
 
         {/* Search Bar */}
-        <View style={styles.searchContainer}>
+        <View
+          style={[styles.searchContainer, gelap && styles.searchContainerDark]}
+        >
           <Ionicons
             name="search-outline"
             size={19}
@@ -322,10 +354,10 @@ export default function HomeMenu() {
           />
           <TextInput
             placeholder="Cari materi atau tantangan..."
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor={gelap ? "#64748B" : "#94A3B8"}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            style={styles.searchInput}
+            style={[styles.searchInput, gelap && styles.searchInputDark]}
             clearButtonMode="while-editing"
           />
           {searchQuery.length > 0 && (
@@ -340,7 +372,7 @@ export default function HomeMenu() {
       </View>
 
       {/* Category Pills Filter */}
-      <View style={styles.filterSection}>
+      <View style={[styles.filterSection, gelap && styles.filterSectionDark]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -349,6 +381,7 @@ export default function HomeMenu() {
           <TouchableOpacity
             style={[
               styles.filterChip,
+              gelap && styles.filterChipDark,
               selectedFilter === "all" && styles.filterChipActive,
             ]}
             onPress={() => setSelectedFilter("all")}
@@ -357,6 +390,7 @@ export default function HomeMenu() {
             <Text
               style={[
                 styles.filterChipText,
+                gelap && styles.filterChipTextDark,
                 selectedFilter === "all" && styles.filterChipTextActive,
               ]}
             >
@@ -371,6 +405,7 @@ export default function HomeMenu() {
                 key={cat.id}
                 style={[
                   styles.filterChip,
+                  gelap && !isActive && styles.filterChipDark,
                   isActive && {
                     backgroundColor: cat.color,
                     borderColor: cat.color,
@@ -388,6 +423,7 @@ export default function HomeMenu() {
                 <Text
                   style={[
                     styles.filterChipText,
+                    gelap && !isActive && styles.filterChipTextDark,
                     isActive && styles.filterChipTextActive,
                   ]}
                 >
@@ -401,18 +437,21 @@ export default function HomeMenu() {
 
       {/* Main Content List */}
       <ScrollView
-        style={styles.contentList}
+        style={[styles.contentList, gelap && styles.contentListDark]}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
         {filteredSections.length === 0 ? (
           <View style={styles.emptyState}>
-            <View style={styles.emptyIconBg}>
+            <View style={[styles.emptyIconBg, gelap && styles.emptyIconBgDark]}>
               <Ionicons name="search-outline" size={32} color="#94A3B8" />
             </View>
-            <Text style={styles.emptyTitle}>Materi Tidak Ditemukan</Text>
-            <Text style={styles.emptyText}>
-              Tidak ada modul yang cocok dengan kata kunci &quot;{searchQuery}&quot;.
+            <Text style={[styles.emptyTitle, gelap && styles.emptyTitleDark]}>
+              Materi Tidak Ditemukan
+            </Text>
+            <Text style={[styles.emptyText, gelap && styles.emptyTextDark]}>
+              Tidak ada modul yang cocok dengan kata kunci &quot;{searchQuery}
+              &quot;.
             </Text>
             <TouchableOpacity
               style={styles.emptyResetBtn}
@@ -442,17 +481,27 @@ export default function HomeMenu() {
                   />
                 </View>
                 <View style={styles.sectionHeaderTextWrap}>
-                  <Text style={styles.sectionCategoryTitle}>
+                  <Text
+                    style={[
+                      styles.sectionCategoryTitle,
+                      gelap && styles.sectionCategoryTitleDark,
+                    ]}
+                  >
                     {section.category}
                   </Text>
-                  <Text style={styles.sectionItemCount}>
+                  <Text
+                    style={[
+                      styles.sectionItemCount,
+                      gelap && styles.sectionItemCountDark,
+                    ]}
+                  >
                     {section.items.length} Pembelajaran
                   </Text>
                 </View>
               </View>
 
               {/* Items Card List */}
-              <View style={styles.cardGroup}>
+              <View style={[styles.cardGroup, gelap && styles.cardGroupDark]}>
                 {section.items.map((item, itemIdx) => {
                   const isChallenge = item.type === "challenge";
                   return (
@@ -460,6 +509,7 @@ export default function HomeMenu() {
                       key={itemIdx}
                       style={[
                         styles.card,
+                        gelap && styles.cardDark,
                         isChallenge && styles.challengeCard,
                         itemIdx === section.items.length - 1 &&
                           styles.lastCardInGroup,
@@ -489,6 +539,7 @@ export default function HomeMenu() {
                           <Text
                             style={[
                               styles.cardTitle,
+                              gelap && styles.cardTitleDark,
                               isChallenge && styles.challengeTitle,
                             ]}
                           >
@@ -508,12 +559,23 @@ export default function HomeMenu() {
                             </View>
                           )}
                         </View>
-                        <Text style={styles.cardDesc} numberOfLines={2}>
+                        <Text
+                          style={[
+                            styles.cardDesc,
+                            gelap && styles.cardDescDark,
+                          ]}
+                          numberOfLines={2}
+                        >
                           {item.desc}
                         </Text>
                       </View>
 
-                      <View style={styles.arrowWrap}>
+                      <View
+                        style={[
+                          styles.arrowWrap,
+                          gelap && styles.arrowWrapDark,
+                        ]}
+                      >
                         <Ionicons
                           name="chevron-forward"
                           size={18}
@@ -553,7 +615,19 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 24,
   },
   headerTop: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
     marginBottom: 14,
+  },
+  themeToggle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 12,
   },
   badgeWrapper: {
     flexDirection: "row",
@@ -837,5 +911,62 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#94A3B8",
     textAlign: "center",
+  },
+  safeAreaDark: {
+    backgroundColor: "#1E1B4B",
+  },
+  headerDark: {
+    backgroundColor: "#1E1B4B",
+  },
+  searchContainerDark: {
+    backgroundColor: "#1E293B",
+  },
+  searchInputDark: {
+    color: "#F1F5F9",
+  },
+  filterSectionDark: {
+    backgroundColor: "#0F172A",
+    borderBottomColor: "#1E293B",
+  },
+  filterChipDark: {
+    backgroundColor: "#1E293B",
+    borderColor: "#334155",
+  },
+  filterChipTextDark: {
+    color: "#94A3B8",
+  },
+  contentListDark: {
+    backgroundColor: "#0F172A",
+  },
+  sectionCategoryTitleDark: {
+    color: "#F1F5F9",
+  },
+  sectionItemCountDark: {
+    color: "#94A3B8",
+  },
+  cardGroupDark: {
+    backgroundColor: "#1E293B",
+    borderColor: "#334155",
+  },
+  cardDark: {
+    borderBottomColor: "#334155",
+  },
+  cardTitleDark: {
+    color: "#F1F5F9",
+  },
+  cardDescDark: {
+    color: "#94A3B8",
+  },
+  arrowWrapDark: {
+    backgroundColor: "#334155",
+  },
+  emptyIconBgDark: {
+    backgroundColor: "#1E293B",
+  },
+  emptyTitleDark: {
+    color: "#F1F5F9",
+  },
+  emptyTextDark: {
+    color: "#94A3B8",
   },
 });
