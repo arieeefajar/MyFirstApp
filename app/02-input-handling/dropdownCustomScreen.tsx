@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
+import ModuleHeader from "../../components/ModuleHeader";
 
 const opsiUrutkan = ["Terbaru", "Terlama", "A-Z", "Z-A"];
 
@@ -15,52 +16,61 @@ export default function DropdownCustomScreen() {
   const [tampilDropdown, setTampilDropdown] = useState(false);
 
   return (
-    <View style={styles.container}>
-      <Pressable style={styles.trigger} onPress={() => setTampilDropdown(true)}>
-        <Text>{terpilih}</Text>
-        <Text style={styles.panah}>▼</Text>
-      </Pressable>
-
-      <Modal
-        visible={tampilDropdown}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setTampilDropdown(false)}
-      >
-        <Pressable
-          style={styles.overlay}
-          onPress={() => setTampilDropdown(false)}
-        >
-          <View style={styles.menuBox}>
-            <FlatList
-              data={opsiUrutkan}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={styles.opsi}
-                  onPress={() => {
-                    setTerpilih(item);
-                    setTampilDropdown(false);
-                  }}
-                >
-                  <Text
-                    style={
-                      item === terpilih ? styles.opsiAktif : styles.opsiTeks
-                    }
-                  >
-                    {item}
-                  </Text>
-                </Pressable>
-              )}
-            />
-          </View>
+    <View style={styles.screen}>
+      <ModuleHeader
+        title="Dropdown Custom"
+        subtitle="Membuat modal popup pilihan kustom dengan FlatList"
+        category="02. Input Handling"
+        color="#0EA5E9"
+      />
+      <View style={styles.container}>
+        <Pressable style={styles.trigger} onPress={() => setTampilDropdown(true)}>
+          <Text>{terpilih}</Text>
+          <Text style={styles.panah}>▼</Text>
         </Pressable>
-      </Modal>
+
+        <Modal
+          visible={tampilDropdown}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setTampilDropdown(false)}
+        >
+          <Pressable
+            style={styles.overlay}
+            onPress={() => setTampilDropdown(false)}
+          >
+            <View style={styles.menuBox}>
+              <FlatList
+                data={opsiUrutkan}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <Pressable
+                    style={styles.opsi}
+                    onPress={() => {
+                      setTerpilih(item);
+                      setTampilDropdown(false);
+                    }}
+                  >
+                    <Text
+                      style={
+                        item === terpilih ? styles.opsiAktif : styles.opsiTeks
+                      }
+                    >
+                      {item}
+                    </Text>
+                  </Pressable>
+                )}
+              />
+            </View>
+          </Pressable>
+        </Modal>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: "#F8FAFC" },
   container: { padding: 20 },
   trigger: {
     flexDirection: "row",
@@ -70,6 +80,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     padding: 12,
+    backgroundColor: "#fff",
   },
   panah: { color: "#666" },
   overlay: {

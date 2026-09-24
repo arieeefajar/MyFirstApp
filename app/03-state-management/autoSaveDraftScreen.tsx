@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import ModuleHeader from "../../components/ModuleHeader";
 
 export default function AutoSaveDraftScreen() {
   const [text, setText] = useState("");
@@ -24,47 +25,42 @@ export default function AutoSaveDraftScreen() {
   }, [text]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Auto-Save Draft (Debounce)</Text>
-      <Text style={styles.subtitle}>
-        Ketik catatan di bawah. Draft akan disimpan otomatis 1,5 detik setelah
-        kamu berhenti mengetik.
-      </Text>
-
-      <TextInput
-        style={styles.input}
-        multiline
-        numberOfLines={6}
-        placeholder="Tulis catatan di sini..."
-        value={text}
-        onChangeText={setText}
-        textAlignVertical="top"
+    <View style={styles.screen}>
+      <ModuleHeader
+        title="Challenge: Auto-Save Draft"
+        subtitle="Simpan otomatis dengan debounce 1,5 detik setelah berhenti mengetik"
+        category="03. State Management"
+        color="#10B981"
+        isChallenge
       />
+      <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          multiline
+          numberOfLines={6}
+          placeholder="Tulis catatan di sini..."
+          value={text}
+          onChangeText={setText}
+          textAlignVertical="top"
+        />
 
-      <View style={styles.statusBox}>
-        <Text style={styles.statusText}>Status: {status}</Text>
+        <View style={styles.statusBox}>
+          <Text style={styles.statusText}>Status: {status}</Text>
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: "#F8FAFC",
+  },
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: "#F9FAFB",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#111827",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginBottom: 20,
-    lineHeight: 20,
   },
   input: {
     backgroundColor: "#FFFFFF",

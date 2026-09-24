@@ -4,40 +4,13 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: "#4F46E5" },
-        headerTintColor: "#fff",
-        headerTitleStyle: { fontWeight: "bold" },
+        headerShown: false,
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{ title: "Menu Pembelajaran React Native" }}
-      />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="02-input-handling" />
+      <Stack.Screen name="03-state-management" />
+      <Stack.Screen name="04-navigation-routing" />
     </Stack>
   );
 }
-
-// import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-// import { Stack } from 'expo-router';
-// import { StatusBar } from 'expo-status-bar';
-// import 'react-native-reanimated';
-
-// import { useColorScheme } from '@/hooks/use-color-scheme';
-
-// export const unstable_settings = {
-//   anchor: '(tabs)',
-// };
-
-// export default function RootLayout() {
-//   const colorScheme = useColorScheme();
-
-//   return (
-//     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-//       <Stack>
-//         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-//         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-//       </Stack>
-//       <StatusBar style="auto" />
-//     </ThemeProvider>
-//   );
-// }

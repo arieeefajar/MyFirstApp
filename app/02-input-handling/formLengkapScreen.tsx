@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import ModuleHeader from "../../components/ModuleHeader";
 
 export default function FormLengkapScreen() {
   const [form, setForm] = useState({ nama: "", email: "" });
@@ -23,31 +24,40 @@ export default function FormLengkapScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Nama"
-        value={form.nama}
-        onChangeText={(text) => updateField("nama", text)}
+    <View style={styles.screen}>
+      <ModuleHeader
+        title="Form Lengkap"
+        subtitle="Formulir multi-input dengan validasi kesiapan kirim"
+        category="02. Input Handling"
+        color="#0EA5E9"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={form.email}
-        onChangeText={(text) => updateField("email", text)}
-      />
-      <Pressable
-        style={[styles.tombol, !bolehKirim && styles.tombolNonaktif]}
-        onPress={handleSubmit}
-        disabled={!bolehKirim}
-      >
-        <Text style={styles.teksTombol}>Simpan</Text>
-      </Pressable>
+      <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          placeholder="Nama"
+          value={form.nama}
+          onChangeText={(text) => updateField("nama", text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={form.email}
+          onChangeText={(text) => updateField("email", text)}
+        />
+        <Pressable
+          style={[styles.tombol, !bolehKirim && styles.tombolNonaktif]}
+          onPress={handleSubmit}
+          disabled={!bolehKirim}
+        >
+          <Text style={styles.teksTombol}>Simpan</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: "#F8FAFC" },
   container: { padding: 20, gap: 12 },
   input: {
     borderWidth: 1,
@@ -55,6 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 15,
+    backgroundColor: "#fff",
   },
   tombol: {
     backgroundColor: "#2196F3",

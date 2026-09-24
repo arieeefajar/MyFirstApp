@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import ModuleHeader from "../../components/ModuleHeader";
 import { Book, useFavorite } from "../../context/FavoriteContext";
 
 const BOOKS_DATA: Book[] = [
@@ -20,47 +21,57 @@ export default function BookListScreen() {
   const { toggleFavorite, isFavorite, favorites } = useFavorite();
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.headerBtn}
-        onPress={() => router.push("/03-state-management/favoriteListScreen")}
-      >
-        <Text style={styles.headerBtnText}>
-          Lihat Favorit ({favorites.length}) →
-        </Text>
-      </TouchableOpacity>
-
-      <FlatList
-        data={BOOKS_DATA}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          const active = isFavorite(item.id);
-          return (
-            <View style={styles.card}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.author}>{item.author}</Text>
-              </View>
-
-              <TouchableOpacity
-                style={[styles.favBtn, active && styles.favBtnActive]}
-                onPress={() => toggleFavorite(item)}
-              >
-                <Text
-                  style={[styles.favBtnText, active && styles.favBtnTextActive]}
-                >
-                  {active ? "❤️ Favorit" : "🤍 Tambah"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          );
-        }}
+    <View style={styles.screen}>
+      <ModuleHeader
+        title="Challenge: Book Favorite"
+        subtitle="Manajemen state global koleksi buku favorit dengan React Context"
+        category="03. State Management"
+        color="#10B981"
+        isChallenge
       />
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.headerBtn}
+          onPress={() => router.push("/03-state-management/favoriteListScreen")}
+        >
+          <Text style={styles.headerBtnText}>
+            Lihat Favorit ({favorites.length}) →
+          </Text>
+        </TouchableOpacity>
+
+        <FlatList
+          data={BOOKS_DATA}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            const active = isFavorite(item.id);
+            return (
+              <View style={styles.card}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.author}>{item.author}</Text>
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.favBtn, active && styles.favBtnActive]}
+                  onPress={() => toggleFavorite(item)}
+                >
+                  <Text
+                    style={[styles.favBtnText, active && styles.favBtnTextActive]}
+                  >
+                    {active ? "❤️ Favorit" : "🤍 Tambah"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: "#F8FAFC" },
   container: { flex: 1, padding: 16, backgroundColor: "#F9FAFB" },
   headerBtn: {
     backgroundColor: "#10B981",

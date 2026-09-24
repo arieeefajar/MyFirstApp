@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import ModuleHeader from "../../components/ModuleHeader";
 
 const dataLaguAwal = [
   { id: "1", judul: "Bohemian Rhapsody", artist: "Queen", selesai: false },
@@ -67,7 +68,13 @@ export default function DaftarLaguScreen() {
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.headerTitle}>🎵 Playlist Favorit</Text>
+      <ModuleHeader
+        title="Challenge: Playlist Lagu"
+        subtitle="Tantangan input form & penambahan data ke FlatList"
+        category="02. Input Handling"
+        color="#0EA5E9"
+        isChallenge
+      />
 
       <View style={styles.formContainer}>
         <TextInput

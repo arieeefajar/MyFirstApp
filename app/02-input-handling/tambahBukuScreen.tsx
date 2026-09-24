@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import ModuleHeader from "../../components/ModuleHeader";
 
 const daftarKategori = [
   { label: "Fiksi", value: "Fiksi" },
@@ -30,40 +31,52 @@ export default function TambahBukuScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Judul Buku</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Masukkan judul buku..."
-        value={judul}
-        onChangeText={setJudul}
+    <View style={styles.screen}>
+      <ModuleHeader
+        title="Tambah Buku"
+        subtitle="Form kombinasi TextInput dan Picker kategori buku"
+        category="02. Input Handling"
+        color="#0EA5E9"
       />
+      <View style={styles.container}>
+        <Text style={styles.label}>Judul Buku</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Masukkan judul buku..."
+          value={judul}
+          onChangeText={setJudul}
+        />
 
-      <Text style={styles.label}>Kategori Buku</Text>
-      <View style={styles.pickerBox}>
-        <Picker selectedValue={kategori} onValueChange={setKategori}>
-          {daftarKategori.map((item) => (
-            <Picker.Item
-              key={item.value}
-              label={item.label}
-              value={item.value}
-            />
-          ))}
-        </Picker>
+        <Text style={styles.label}>Kategori Buku</Text>
+        <View style={styles.pickerBox}>
+          <Picker selectedValue={kategori} onValueChange={setKategori}>
+            {daftarKategori.map((item) => (
+              <Picker.Item
+                key={item.value}
+                label={item.label}
+                value={item.value}
+              />
+            ))}
+          </Picker>
+        </View>
+
+        <Pressable
+          style={[styles.tombol, !isFormValid && styles.tombolDisabled]}
+          disabled={!isFormValid}
+          onPress={handleSimpan}
+        >
+          <Text style={styles.teksTombol}>Simpan</Text>
+        </Pressable>
       </View>
-
-      <Pressable
-        style={[styles.tombol, !isFormValid && styles.tombolDisabled]}
-        disabled={!isFormValid}
-        onPress={handleSimpan}
-      >
-        <Text style={styles.teksTombol}>Simpan</Text>
-      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: "#F8FAFC",
+  },
   container: {
     padding: 20,
     gap: 12,
@@ -79,12 +92,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 14,
+    backgroundColor: "#fff",
   },
   pickerBox: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
     overflow: "hidden",
+    backgroundColor: "#fff",
   },
   tombol: {
     backgroundColor: "#2196F3",
