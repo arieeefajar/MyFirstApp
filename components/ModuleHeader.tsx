@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { memo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -14,7 +14,7 @@ export interface ModuleHeaderProps {
   rightAction?: React.ReactNode;
 }
 
-export default function ModuleHeader({
+function ModuleHeaderComponent({
   title,
   subtitle,
   category = "Modul Belajar",
@@ -97,6 +97,10 @@ export default function ModuleHeader({
     </>
   );
 }
+
+// Memoized component untuk prevent unnecessary re-renders
+const ModuleHeader = memo(ModuleHeaderComponent);
+export default ModuleHeader;
 
 const styles = StyleSheet.create({
   container: {

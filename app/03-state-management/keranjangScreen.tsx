@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
   FlatList,
+  ListRenderItem,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -8,20 +9,15 @@ import {
 } from "react-native";
 import ModuleHeader from "../../components/ModuleHeader";
 import { CartItem, useCart } from "@/context/CartContext";
-
-function formatRupiah(nominal: number) {
-  return "Rp" + nominal.toLocaleString("id-ID");
-}
-
-interface GroupedItem extends CartItem {
-  jumlah: number;
-}
+import { formatRupiah } from "@/utils/helpers";
+import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from "@/constants/tokens";
 
 export default function KeranjangScreen() {
   const { items, tambahItem, kurangItem, hapusItem } = useCart();
 
-  const groupedItems: GroupedItem[] = useMemo(() => {
-    const map = new Map<string, GroupedItem>();
+  // Group items by id and calculate quantities
+  const groupedItems = useMemo(() => {
+    const map = new Map<string, CartItem & { jumlah: number }>();
     items.forEach((item) => {
       const existing = map.get(item.id);
       if (existing) {
@@ -33,8 +29,82 @@ export default function KeranjangScreen() {
     return Array.from(map.values());
   }, [items]);
 
-  const totalJumlah = groupedItems.reduce((total, item) => total + item.jumlah, 0);
-  const totalHarga = items.reduce((total, item) => total + item.harga, 0);
+  const totalJumlah = useMemo(
+    () => groupedItems.reduce((total, item) => total + item.jumlah, 0),
+    [groupedItems]
+  );
+
+  const totalHarga = useMemo(
+    () => items.reduce((total, item) => total + item.harga, 0),
+    [items]
+  );
+
+  const handleAddItem = useCallback(
+    (item: CartItem) => {
+      tambahItem({ id: item.id, nama: item.nama, harga: item.harga });
+    },
+    [tambahItem]
+  );
+
+  const handleRemoveItem = useCallback(
+    (id: string) => {
+      kurangItem(id);
+    },
+    [kurangItem]
+  );
+
+  const handleDeleteItem = useCallback(
+    (id: string) => {
+      hapusItem(id);
+    },
+    [hapusItem]
+  );
+
+  const renderItem: ListRenderItem<CartItem & { jumlah: number }> = useCallback(
+    ({ item }) => (
+      <View style={styles.card}>
+        <View style={styles.cardContent}>
+          <Text style={styles.title}>{item.nama}</Text>
+          <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
+          
+          <View style={styles.qtyRow}>
+            <View style={styles.qtyControl}>
+              <TouchableOpacity
+                style={styles.qtyBtn}
+                onPress={() => handleRemoveItem(item.id)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.qtyBtnText}>−</Text>
+              </TouchableOpacity>
+              <Text style={styles.qtyText}>{item.jumlah}</Text>
+              <TouchableOpacity
+                style={styles.qtyBtn}
+                onPress={() => handleAddItem(item)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.qtyBtnText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          
+          <Text style={styles.subtotalText}>
+            Subtotal: {formatRupiah(item.harga * item.jumlah)}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.removeBtn}
+          onPress={() => handleDeleteItem(item.id)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.removeBtnText}>Hapus</Text>
+        </TouchableOpacity>
+      </View>
+    ),
+    [handleAddItem, handleRemoveItem, handleDeleteItem]
+  );
+
+  const keyExtractor = useCallback((item: CartItem) => item.id, []);
 
   return (
     <View style={styles.screen}>
@@ -42,7 +112,7 @@ export default function KeranjangScreen() {
         title="Keranjang Belanja"
         subtitle="Membaca dan menghapus data dari CartContext"
         category="03. State Management"
-        color="#10B981"
+        color={COLORS.modules.state}
       />
       <View style={styles.container}>
         {items.length === 0 ? (
@@ -58,57 +128,15 @@ export default function KeranjangScreen() {
               <Text style={styles.totalLabel}>
                 Total ({groupedItems.length} produk, {totalJumlah} item)
               </Text>
-              <Text style={styles.totalValue}>
-                {formatRupiah(totalHarga)}
-              </Text>
+              <Text style={styles.totalValue}>{formatRupiah(totalHarga)}</Text>
             </View>
 
             <FlatList
               data={groupedItems}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={styles.card}>
-                  <View style={styles.cardContent}>
-                    <Text style={styles.title}>{item.nama}</Text>
-                    <Text style={styles.price}>
-                      {formatRupiah(item.harga)}
-                    </Text>
-                    <View style={styles.qtyRow}>
-                      <View style={styles.qtyControl}>
-                        <TouchableOpacity
-                          style={styles.qtyBtn}
-                          onPress={() => kurangItem(item.id)}
-                        >
-                          <Text style={styles.qtyBtnText}>−</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.qtyText}>{item.jumlah}</Text>
-                        <TouchableOpacity
-                          style={styles.qtyBtn}
-                          onPress={() =>
-                            tambahItem({
-                              id: item.id,
-                              nama: item.nama,
-                              harga: item.harga,
-                            })
-                          }
-                        >
-                          <Text style={styles.qtyBtnText}>+</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                    <Text style={styles.subtotalText}>
-                      Subtotal: {formatRupiah(item.harga * item.jumlah)}
-                    </Text>
-                  </View>
-
-                  <TouchableOpacity
-                    style={styles.removeBtn}
-                    onPress={() => hapusItem(item.id)}
-                  >
-                    <Text style={styles.removeBtnText}>Hapus</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+              keyExtractor={keyExtractor}
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.listContent}
             />
           </>
         )}
@@ -118,80 +146,123 @@ export default function KeranjangScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#F8FAFC" },
-  container: { flex: 1, padding: 16, backgroundColor: "#F9FAFB" },
+  screen: { 
+    flex: 1, 
+    backgroundColor: COLORS.background.light 
+  },
+  container: { 
+    flex: 1, 
+    padding: SPACING.lg,
+  },
+  listContent: {
+    gap: SPACING.md,
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: 4,
+    gap: SPACING.xs,
   },
-  emptyText: { color: "#374151", fontSize: 16, fontWeight: "bold" },
-  emptySubText: { color: "#9CA3AF", fontSize: 14 },
+  emptyText: { 
+    color: COLORS.text.primary, 
+    fontSize: FONT_SIZES.lg, 
+    fontWeight: "bold" 
+  },
+  emptySubText: { 
+    color: COLORS.text.tertiary, 
+    fontSize: FONT_SIZES.md 
+  },
   totalBox: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: COLORS.background.white,
+    padding: SPACING.lg,
+    borderRadius: BORDER_RADIUS.md,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
-    elevation: 2,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.md,
   },
-  totalLabel: { fontSize: 14, color: "#6B7280" },
-  totalValue: { fontSize: 18, fontWeight: "bold", color: "#10B981" },
+  totalLabel: { 
+    fontSize: FONT_SIZES.md, 
+    color: COLORS.text.secondary 
+  },
+  totalValue: { 
+    fontSize: FONT_SIZES.xl, 
+    fontWeight: "bold", 
+    color: COLORS.modules.state 
+  },
   card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: COLORS.background.white,
+    padding: SPACING.lg,
+    borderRadius: BORDER_RADIUS.xl,
     flexDirection: "row",
     alignItems: "flex-start",
-    marginBottom: 12,
-    elevation: 2,
+    ...SHADOWS.md,
   },
   cardContent: {
     flex: 1,
-    marginRight: 12,
+    marginRight: SPACING.md,
   },
-  title: { fontSize: 16, fontWeight: "bold" },
-  price: { fontSize: 14, color: "#10B981", fontWeight: "600", marginTop: 4 },
+  title: { 
+    fontSize: FONT_SIZES.lg, 
+    fontWeight: "bold",
+    color: COLORS.text.primary,
+  },
+  price: { 
+    fontSize: FONT_SIZES.md, 
+    color: COLORS.modules.state, 
+    fontWeight: "600", 
+    marginTop: SPACING.xs,
+  },
   qtyRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 8,
+    marginTop: SPACING.sm,
   },
   qtyControl: {
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
     backgroundColor: "#D1FAE5",
-    borderRadius: 12,
-    paddingHorizontal: 4,
+    borderRadius: BORDER_RADIUS.xl,
+    paddingHorizontal: SPACING.xs,
     paddingVertical: 2,
-    gap: 4,
+    gap: SPACING.xs,
   },
   qtyBtn: {
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: "#10B981",
+    backgroundColor: COLORS.modules.state,
     justifyContent: "center",
     alignItems: "center",
   },
-  qtyBtnText: { fontSize: 16, fontWeight: "bold", color: "#fff", lineHeight: 18 },
+  qtyBtnText: { 
+    fontSize: FONT_SIZES.lg, 
+    fontWeight: "bold", 
+    color: COLORS.text.white, 
+    lineHeight: 18 
+  },
   qtyText: {
-    fontSize: 13,
+    fontSize: FONT_SIZES.sm,
     fontWeight: "bold",
     color: "#047857",
     minWidth: 24,
     textAlign: "center",
   },
   subtotalText: {
-    fontSize: 12,
-    color: "#6B7280",
-    marginTop: 6,
-    flexShrink: 1,
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.text.secondary,
+    marginTop: SPACING.sm,
   },
-  removeBtn: { backgroundColor: "#EF4444", padding: 8, borderRadius: 6 },
-  removeBtnText: { color: "#fff", fontSize: 12, fontWeight: "bold" },
+  removeBtn: { 
+    backgroundColor: COLORS.error, 
+    padding: SPACING.sm, 
+    borderRadius: BORDER_RADIUS.md,
+  },
+  removeBtnText: { 
+    color: COLORS.text.white, 
+    fontSize: FONT_SIZES.sm, 
+    fontWeight: "bold" 
+  },
 });

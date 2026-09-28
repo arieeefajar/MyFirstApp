@@ -1,28 +1,50 @@
 import { useRouter } from "expo-router";
+import { useCallback } from "react";
 import {
   FlatList,
+  ListRenderItem,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import ModuleHeader from "../../components/ModuleHeader";
-import { CartItem, useCart } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext";
+import { PRODUCT_DATA } from "./data";
+import { Product } from "@/types";
+import { formatRupiah } from "@/utils/helpers";
+import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from "@/constants/tokens";
 
-const daftarProduk: CartItem[] = [
-  { id: "1", nama: "Buku React Native", harga: 85000 },
-  { id: "2", nama: "Buku JavaScript", harga: 75000 },
-  { id: "3", nama: "Buku TypeScript", harga: 95000 },
-  { id: "4", nama: "Buku UI/UX Mobile", harga: 65000 },
-];
-
-function formatRupiah(nominal: number) {
-  return "Rp" + nominal.toLocaleString("id-ID");
-}
-
-export default function ProdukScreen() {
+export default function ProductScreen() {
   const router = useRouter();
-  const { items, tambahItem } = useCart();
+  const { totalItems, tambahItem } = useCart();
+
+  const handleAddToCart = useCallback((product: Product) => {
+    tambahItem(product);
+  }, [tambahItem]);
+
+  const navigateToCart = useCallback(() => {
+    router.push("/03-state-management/keranjangScreen");
+  }, [router]);
+
+  const renderProduct: ListRenderItem<Product> = useCallback(({ item }) => (
+    <View style={styles.card}>
+      <View style={styles.cardContent}>
+        <Text style={styles.title}>{item.nama}</Text>
+        <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
+      </View>
+
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={() => handleAddToCart(item)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.addBtnText}>+ Keranjang</Text>
+      </TouchableOpacity>
+    </View>
+  ), [handleAddToCart]);
+
+  const keyExtractor = useCallback((item: Product) => item.id, []);
 
   return (
     <View style={styles.screen}>
@@ -30,36 +52,25 @@ export default function ProdukScreen() {
         title="Daftar Produk"
         subtitle="Menambah produk ke keranjang global dengan CartContext"
         category="03. State Management"
-        color="#10B981"
+        color={COLORS.modules.state}
       />
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.headerBtn}
-          onPress={() => router.push("/03-state-management/keranjangScreen")}
+          onPress={navigateToCart}
+          activeOpacity={0.8}
         >
           <Text style={styles.headerBtnText}>
-            Lihat Keranjang ({items.length}) →
+            Lihat Keranjang ({totalItems}) →
           </Text>
         </TouchableOpacity>
 
         <FlatList
-          data={daftarProduk}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.title}>{item.nama}</Text>
-                <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
-              </View>
-
-              <TouchableOpacity
-                style={styles.addBtn}
-                onPress={() => tambahItem(item)}
-              >
-                <Text style={styles.addBtnText}>+ Keranjang</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          data={PRODUCT_DATA}
+          keyExtractor={keyExtractor}
+          renderItem={renderProduct}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
         />
       </View>
     </View>
@@ -67,32 +78,61 @@ export default function ProdukScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#F8FAFC" },
-  container: { flex: 1, padding: 16, backgroundColor: "#F9FAFB" },
-  headerBtn: {
-    backgroundColor: "#10B981",
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 16,
+  screen: { 
+    flex: 1, 
+    backgroundColor: COLORS.background.light 
   },
-  headerBtnText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  container: { 
+    flex: 1, 
+    padding: SPACING.lg,
+  },
+  headerBtn: {
+    backgroundColor: COLORS.modules.state,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    alignItems: "center",
+    marginBottom: SPACING.lg,
+    ...SHADOWS.md,
+  },
+  headerBtnText: { 
+    color: COLORS.text.white, 
+    fontWeight: "bold", 
+    fontSize: FONT_SIZES.lg 
+  },
+  listContent: {
+    gap: SPACING.md,
+  },
   card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: COLORS.background.white,
+    padding: SPACING.lg,
+    borderRadius: BORDER_RADIUS.xl,
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
-    elevation: 2,
+    ...SHADOWS.md,
   },
-  title: { fontSize: 16, fontWeight: "bold" },
-  price: { fontSize: 14, color: "#10B981", fontWeight: "600", marginTop: 4 },
+  cardContent: {
+    flex: 1,
+  },
+  title: { 
+    fontSize: FONT_SIZES.lg, 
+    fontWeight: "bold",
+    color: COLORS.text.primary,
+  },
+  price: { 
+    fontSize: FONT_SIZES.md, 
+    color: COLORS.modules.state, 
+    fontWeight: "600", 
+    marginTop: SPACING.xs,
+  },
   addBtn: {
-    backgroundColor: "#10B981",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+    backgroundColor: COLORS.modules.state,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
   },
-  addBtnText: { color: "#fff", fontSize: 12, fontWeight: "bold" },
+  addBtnText: { 
+    color: COLORS.text.white, 
+    fontSize: FONT_SIZES.sm, 
+    fontWeight: "bold" 
+  },
 });
