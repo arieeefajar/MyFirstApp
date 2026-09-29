@@ -10,3 +10,14 @@ export interface DetailBukuParams {
   judul?: string;
   penulis?: string;
 }
+
+export interface Mahasiswa {
+  id: string;
+  nama: string;
+  nim: string;
+}
+
+export interface DetailMahasiswaParams {
+  nama?: string;
+  nim?: string;
+}

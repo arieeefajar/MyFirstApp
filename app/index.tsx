@@ -245,6 +245,20 @@ const LESSONS: LessonCategory[] = [
         icon: "information-circle-outline",
         type: "materi",
       },
+      {
+        title: "Daftar Mahasiswa",
+        desc: "Navigasi antar halaman daftar mahasiswa",
+        path: "/04-navigation-routing/DaftarMahasiswaScreen",
+        icon: "people-outline",
+        type: "challenge",
+      },
+      {
+        title: "Detail Mahasiswa",
+        desc: "Passing parameter dan membaca detail rute",
+        path: "/04-navigation-routing/DetailMahasiswaScreen",
+        icon: "person-outline",
+        type: "challenge",
+      },
     ],
   },
 ];
