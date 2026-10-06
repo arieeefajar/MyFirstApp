@@ -11,6 +11,7 @@ export interface ModuleHeaderProps {
   category?: string;
   color?: string;
   isChallenge?: boolean;
+  gelap?: boolean;
   rightAction?: React.ReactNode;
 }
 
@@ -20,6 +21,7 @@ function ModuleHeaderComponent({
   category = "Modul Belajar",
   color = "#4F46E5",
   isChallenge = false,
+  gelap = false,
   rightAction,
 }: ModuleHeaderProps) {
   const router = useRouter();
@@ -28,23 +30,28 @@ function ModuleHeaderComponent({
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <StatusBar style="dark" />
+      <StatusBar style={gelap ? "light" : "dark"} />
 
       <View
         style={[
           styles.container,
+          gelap && styles.containerDark,
           { paddingTop: Math.max(insets.top, 12) + 6 },
         ]}
       >
         {/* Top Bar Row (Back Button & Category Pill) */}
         <View style={styles.topRow}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, gelap && styles.backButtonDark]}
             onPress={() => router.back()}
             activeOpacity={0.7}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="chevron-back" size={20} color="#1E293B" />
+            <Ionicons
+              name="chevron-back"
+              size={20}
+              color={gelap ? "#F1F5F9" : "#1E293B"}
+            />
           </TouchableOpacity>
 
           <View style={styles.topRightWrap}>
@@ -84,14 +91,20 @@ function ModuleHeaderComponent({
 
         {/* Title & Subtitle */}
         <View style={styles.titleWrap}>
-          <Text style={styles.title}>{title}</Text>
-          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+          <Text style={[styles.title, gelap && styles.titleDark]}>
+            {title}
+          </Text>
+          {subtitle ? (
+            <Text style={[styles.subtitle, gelap && styles.subtitleDark]}>
+              {subtitle}
+            </Text>
+          ) : null}
         </View>
 
         {/* Bottom Accent Line */}
         <View style={styles.accentLineContainer}>
           <View style={[styles.accentDash, { backgroundColor: color }]} />
-          <View style={styles.accentTrack} />
+          <View style={[styles.accentTrack, gelap && styles.accentTrackDark]} />
         </View>
       </View>
     </>
@@ -115,6 +128,10 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  containerDark: {
+    backgroundColor: "#0F172A",
+    borderBottomColor: "#334155",
+  },
   topRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -130,6 +147,10 @@ const styles = StyleSheet.create({
     borderColor: "#E2E8F0",
     justifyContent: "center",
     alignItems: "center",
+  },
+  backButtonDark: {
+    backgroundColor: "#1E293B",
+    borderColor: "#334155",
   },
   topRightWrap: {
     flexDirection: "row",
@@ -180,11 +201,17 @@ const styles = StyleSheet.create({
     color: "#0F172A",
     letterSpacing: -0.4,
   },
+  titleDark: {
+    color: "#F1F5F9",
+  },
   subtitle: {
     fontSize: 13,
     color: "#64748B",
     marginTop: 3,
     lineHeight: 18,
+  },
+  subtitleDark: {
+    color: "#94A3B8",
   },
   accentLineContainer: {
     flexDirection: "row",
@@ -202,5 +229,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 1,
     backgroundColor: "#F1F5F9",
+  },
+  accentTrackDark: {
+    backgroundColor: "#334155",
   },
 });

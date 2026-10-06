@@ -9,11 +9,13 @@ import {
 } from "react-native";
 import ModuleHeader from "../../components/ModuleHeader";
 import { CartItem, useCart } from "@/context/CartContext";
+import { useTheme } from "@/context/ThemeContext";
 import { formatRupiah } from "@/utils/helpers";
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from "@/constants/tokens";
 
 export default function KeranjangScreen() {
   const { items, tambahItem, kurangItem, hapusItem } = useCart();
+  const { gelap } = useTheme();
 
   // Group items by id and calculate quantities
   const groupedItems = useMemo(() => {
@@ -62,9 +64,11 @@ export default function KeranjangScreen() {
 
   const renderItem: ListRenderItem<CartItem & { jumlah: number }> = useCallback(
     ({ item }) => (
-      <View style={styles.card}>
+      <View style={[styles.card, gelap && styles.cardDark]}>
         <View style={styles.cardContent}>
-          <Text style={styles.title}>{item.nama}</Text>
+          <Text style={[styles.title, gelap && styles.titleDark]}>
+            {item.nama}
+          </Text>
           <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
           
           <View style={styles.qtyRow}>
@@ -87,7 +91,9 @@ export default function KeranjangScreen() {
             </View>
           </View>
           
-          <Text style={styles.subtotalText}>
+          <Text
+            style={[styles.subtotalText, gelap && styles.subtotalTextDark]}
+          >
             Subtotal: {formatRupiah(item.harga * item.jumlah)}
           </Text>
         </View>
@@ -101,31 +107,36 @@ export default function KeranjangScreen() {
         </TouchableOpacity>
       </View>
     ),
-    [handleAddItem, handleRemoveItem, handleDeleteItem]
+    [handleAddItem, handleRemoveItem, handleDeleteItem, gelap]
   );
 
   const keyExtractor = useCallback((item: CartItem) => item.id, []);
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, gelap && styles.screenDark]}>
       <ModuleHeader
         title="Keranjang Belanja"
         subtitle="Membaca dan menghapus data dari CartContext"
         category="03. State Management"
         color={COLORS.modules.state}
+        gelap={gelap}
       />
       <View style={styles.container}>
         {items.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Keranjang masih kosong.</Text>
+            <Text style={[styles.emptyText, gelap && styles.emptyTextDark]}>
+              Keranjang masih kosong.
+            </Text>
             <Text style={styles.emptySubText}>
               Tambahkan produk dari halaman Daftar Produk.
             </Text>
           </View>
         ) : (
           <>
-            <View style={styles.totalBox}>
-              <Text style={styles.totalLabel}>
+            <View style={[styles.totalBox, gelap && styles.totalBoxDark]}>
+              <Text
+                style={[styles.totalLabel, gelap && styles.totalLabelDark]}
+              >
                 Total ({groupedItems.length} produk, {totalJumlah} item)
               </Text>
               <Text style={styles.totalValue}>{formatRupiah(totalHarga)}</Text>
@@ -150,6 +161,9 @@ const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: COLORS.background.light 
   },
+  screenDark: {
+    backgroundColor: COLORS.background.dark,
+  },
   container: { 
     flex: 1, 
     padding: SPACING.lg,
@@ -168,6 +182,9 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.lg, 
     fontWeight: "bold" 
   },
+  emptyTextDark: {
+    color: "#F1F5F9",
+  },
   emptySubText: { 
     color: COLORS.text.tertiary, 
     fontSize: FONT_SIZES.md 
@@ -182,9 +199,15 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
     ...SHADOWS.md,
   },
+  totalBoxDark: {
+    backgroundColor: "#1E293B",
+  },
   totalLabel: { 
     fontSize: FONT_SIZES.md, 
     color: COLORS.text.secondary 
+  },
+  totalLabelDark: {
+    color: "#94A3B8",
   },
   totalValue: { 
     fontSize: FONT_SIZES.xl, 
@@ -199,6 +222,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     ...SHADOWS.md,
   },
+  cardDark: {
+    backgroundColor: "#1E293B",
+  },
   cardContent: {
     flex: 1,
     marginRight: SPACING.md,
@@ -207,6 +233,9 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.lg, 
     fontWeight: "bold",
     color: COLORS.text.primary,
+  },
+  titleDark: {
+    color: "#F1F5F9",
   },
   price: { 
     fontSize: FONT_SIZES.md, 
@@ -254,6 +283,9 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     color: COLORS.text.secondary,
     marginTop: SPACING.sm,
+  },
+  subtotalTextDark: {
+    color: "#94A3B8",
   },
   removeBtn: { 
     backgroundColor: COLORS.error, 

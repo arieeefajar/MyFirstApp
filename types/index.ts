@@ -21,6 +21,12 @@ export interface Book {
 // Theme types
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+// Auth types
+export interface User {
+  nama: string;
+  email: string;
+}
+
 // Navigation params types
 export interface RouteParams {
   [key: string]: string | number | boolean | undefined;
