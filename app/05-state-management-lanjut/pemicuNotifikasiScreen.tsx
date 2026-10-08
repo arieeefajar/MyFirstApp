@@ -1,6 +1,3 @@
-import ModuleHeader from "../../components/ModuleHeader";
-import { useNotification } from "@/context/NotificationContext";
-import { useTheme } from "@/context/ThemeContext";
 import {
   BORDER_RADIUS,
   COLORS,
@@ -8,15 +5,12 @@ import {
   SHADOWS,
   SPACING,
 } from "@/constants/tokens";
+import { useNotification } from "@/context/NotificationContext";
+import { useTheme } from "@/context/ThemeContext";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import ModuleHeader from "../../components/ModuleHeader";
 
 const PESAN_PRESET = [
   "Promo: Diskon 50% semua buku React Native",
@@ -41,8 +35,8 @@ export default function PemicuNotifikasiScreen() {
       <ModuleHeader
         title="Pemicu Notifikasi"
         subtitle="Menambah notifikasi baru via NotificationContext"
-        category="03. State Management"
-        color={COLORS.modules.state}
+        category="05. State Management Lanjut"
+        color={COLORS.modules.state_lanjut}
         gelap={gelap}
       />
       <View style={styles.container}>

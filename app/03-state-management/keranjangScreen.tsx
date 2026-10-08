@@ -17,27 +17,13 @@ export default function KeranjangScreen() {
   const { items, tambahItem, kurangItem, hapusItem } = useCart();
   const { gelap } = useTheme();
 
-  // Group items by id and calculate quantities
-  const groupedItems = useMemo(() => {
-    const map = new Map<string, CartItem & { jumlah: number }>();
-    items.forEach((item) => {
-      const existing = map.get(item.id);
-      if (existing) {
-        existing.jumlah += 1;
-      } else {
-        map.set(item.id, { ...item, jumlah: 1 });
-      }
-    });
-    return Array.from(map.values());
-  }, [items]);
-
   const totalJumlah = useMemo(
-    () => groupedItems.reduce((total, item) => total + item.jumlah, 0),
-    [groupedItems]
+    () => items.reduce((total, item) => total + (item.quantity || 1), 0),
+    [items]
   );
 
   const totalHarga = useMemo(
-    () => items.reduce((total, item) => total + item.harga, 0),
+    () => items.reduce((total, item) => total + item.harga * (item.quantity || 1), 0),
     [items]
   );
 
@@ -62,51 +48,54 @@ export default function KeranjangScreen() {
     [hapusItem]
   );
 
-  const renderItem: ListRenderItem<CartItem & { jumlah: number }> = useCallback(
-    ({ item }) => (
-      <View style={[styles.card, gelap && styles.cardDark]}>
-        <View style={styles.cardContent}>
-          <Text style={[styles.title, gelap && styles.titleDark]}>
-            {item.nama}
-          </Text>
-          <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
-          
-          <View style={styles.qtyRow}>
-            <View style={styles.qtyControl}>
-              <TouchableOpacity
-                style={styles.qtyBtn}
-                onPress={() => handleRemoveItem(item.id)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.qtyBtnText}>−</Text>
-              </TouchableOpacity>
-              <Text style={styles.qtyText}>{item.jumlah}</Text>
-              <TouchableOpacity
-                style={styles.qtyBtn}
-                onPress={() => handleAddItem(item)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.qtyBtnText}>+</Text>
-              </TouchableOpacity>
+  const renderItem: ListRenderItem<CartItem> = useCallback(
+    ({ item }) => {
+      const qty = item.quantity || 1;
+      return (
+        <View style={[styles.card, gelap && styles.cardDark]}>
+          <View style={styles.cardContent}>
+            <Text style={[styles.title, gelap && styles.titleDark]}>
+              {item.nama}
+            </Text>
+            <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
+            
+            <View style={styles.qtyRow}>
+              <View style={styles.qtyControl}>
+                <TouchableOpacity
+                  style={styles.qtyBtn}
+                  onPress={() => handleRemoveItem(item.id)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.qtyBtnText}>−</Text>
+                </TouchableOpacity>
+                <Text style={styles.qtyText}>{qty}</Text>
+                <TouchableOpacity
+                  style={styles.qtyBtn}
+                  onPress={() => handleAddItem(item)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.qtyBtnText}>+</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+            
+            <Text
+              style={[styles.subtotalText, gelap && styles.subtotalTextDark]}
+            >
+              Subtotal: {formatRupiah(item.harga * qty)}
+            </Text>
           </View>
-          
-          <Text
-            style={[styles.subtotalText, gelap && styles.subtotalTextDark]}
-          >
-            Subtotal: {formatRupiah(item.harga * item.jumlah)}
-          </Text>
-        </View>
 
-        <TouchableOpacity
-          style={styles.removeBtn}
-          onPress={() => handleDeleteItem(item.id)}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.removeBtnText}>Hapus</Text>
-        </TouchableOpacity>
-      </View>
-    ),
+          <TouchableOpacity
+            style={styles.removeBtn}
+            onPress={() => handleDeleteItem(item.id)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.removeBtnText}>Hapus</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    },
     [handleAddItem, handleRemoveItem, handleDeleteItem, gelap]
   );
 
@@ -137,13 +126,13 @@ export default function KeranjangScreen() {
               <Text
                 style={[styles.totalLabel, gelap && styles.totalLabelDark]}
               >
-                Total ({groupedItems.length} produk, {totalJumlah} item)
+                Total ({items.length} produk, {totalJumlah} item)
               </Text>
               <Text style={styles.totalValue}>{formatRupiah(totalHarga)}</Text>
             </View>
 
             <FlatList
-              data={groupedItems}
+              data={items}
               keyExtractor={keyExtractor}
               renderItem={renderItem}
               showsVerticalScrollIndicator={false}

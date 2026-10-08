@@ -1,6 +1,3 @@
-import ModuleHeader from "../../components/ModuleHeader";
-import { useNotification } from "@/context/NotificationContext";
-import { useTheme } from "@/context/ThemeContext";
 import {
   BORDER_RADIUS,
   COLORS,
@@ -8,6 +5,8 @@ import {
   SHADOWS,
   SPACING,
 } from "@/constants/tokens";
+import { useNotification } from "@/context/NotificationContext";
+import { useTheme } from "@/context/ThemeContext";
 import {
   FlatList,
   ListRenderItem,
@@ -16,6 +15,7 @@ import {
   Text,
   View,
 } from "react-native";
+import ModuleHeader from "../../components/ModuleHeader";
 
 export default function DaftarNotifikasiScreen() {
   const { notifikasi, jumlahNotifikasi, hapusSemua } = useNotification();
@@ -35,8 +35,8 @@ export default function DaftarNotifikasiScreen() {
       <ModuleHeader
         title="Daftar Notifikasi"
         subtitle="Membaca notifikasi dari NotificationContext"
-        category="03. State Management"
-        color={COLORS.modules.state}
+        category="05. State Management Lanjut"
+        color={COLORS.modules.state_lanjut}
         gelap={gelap}
         rightAction={
           <View style={styles.badge}>

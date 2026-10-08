@@ -1,4 +1,14 @@
 import {
+  BORDER_RADIUS,
+  COLORS,
+  FONT_SIZES,
+  SHADOWS,
+  SPACING,
+} from "@/constants/tokens";
+import { useTheme } from "@/context/ThemeContext";
+import { resetForm, updateField } from "@/redux/formSlice";
+import type { AppDispatch, RootState } from "@/redux/store";
+import {
   Alert,
   Pressable,
   StyleSheet,
@@ -7,17 +17,7 @@ import {
   View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "@/redux/store";
-import { updateField, resetForm } from "@/redux/formSlice";
 import ModuleHeader from "../../components/ModuleHeader";
-import { useTheme } from "@/context/ThemeContext";
-import {
-  COLORS,
-  SPACING,
-  FONT_SIZES,
-  BORDER_RADIUS,
-  SHADOWS,
-} from "@/constants/tokens";
 
 export default function FormScreen() {
   const form = useSelector((state: RootState) => state.form);
@@ -39,7 +39,7 @@ export default function FormScreen() {
         title="Redux Form"
         subtitle="Menyimpan input form ke global state dengan Redux slice"
         category="05. State Management Lanjut"
-        color="#8B5CF6"
+        color={COLORS.modules.state_lanjut}
         gelap={gelap}
       />
       <View style={styles.container}>
