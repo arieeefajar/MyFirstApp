@@ -320,6 +320,30 @@ const LESSONS: LessonCategory[] = [
       },
     ],
   },
+  {
+    id: "09",
+    category: "09. Integrasi API",
+    shortName: "API",
+    icon: "cloud-outline",
+    color: "#06B6D4",
+    bgColor: "#CFFAFE",
+    items: [
+      {
+        title: "Daftar User",
+        desc: "Mengambil & menampilkan data user dari REST API",
+        path: "/09-integrasi-api/DaftarUserScreen",
+        icon: "people-outline",
+        type: "materi",
+      },
+      {
+        title: "Buat Post",
+        desc: "Mengirim data post baru ke REST API dengan metode POST",
+        path: "/09-integrasi-api/BuatPostScreen",
+        icon: "send-outline",
+        type: "materi",
+      },
+    ],
+  },
 ];
 
 export default function ModulScreen() {
