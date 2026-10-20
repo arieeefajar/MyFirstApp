@@ -15,7 +15,7 @@ import {
   Text,
   View,
 } from "react-native";
-import ModuleHeader from "../../components/ModuleHeader";
+import ModuleHeader from "@/components/ModuleHeader";
 
 const API_COLOR = "#06B6D4";
 const API_BG = "#CFFAFE";

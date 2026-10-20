@@ -20,7 +20,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import ModuleHeader from "../../components/ModuleHeader";
+import ModuleHeader from "@/components/ModuleHeader";
+import { createPost } from "@/services/api/userApi";
 
 const API_COLOR = "#06B6D4";
 const API_BG = "#CFFAFE";
@@ -33,19 +34,13 @@ export default function BuatPostScreen() {
   const kirimPost = async () => {
     setMengirim(true);
     try {
-      const response = await fetch(
-        "https://jsonplaceholder.typicode.com/posts",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: judul, body: "", userId: 1 }),
-        },
-      );
+      const response = await createPost({
+        title: judul,
+        body: "",
+        userId: 1,
+      });
 
-      if (!response.ok) throw new Error("Gagal mengirim data");
-
-      const hasil = await response.json();
-      Alert.alert("Berhasil", `Post dibuat dengan ID: ${hasil.id}`);
+      Alert.alert("Berhasil", `Post dibuat dengan ID: ${response.data.id}`);
       setJudul("");
     } catch (err) {
       Alert.alert(
@@ -60,8 +55,8 @@ export default function BuatPostScreen() {
   return (
     <View style={[styles.screen, gelap && styles.screenDark]}>
       <ModuleHeader
-        title="Buat Post"
-        subtitle="Kirim data post baru ke REST API"
+        title="Buat Post (Axios)"
+        subtitle="Mengirim post baru melalui service userApi"
         category="09. Integrasi API"
         color={API_COLOR}
         gelap={gelap}
@@ -158,7 +153,7 @@ export default function BuatPostScreen() {
               color={gelap ? "#67E8F9" : "#0E7490"}
             />
             <Text style={[styles.infoText, gelap && styles.infoTextDark]}>
-              Data akan dikirim ke JSONPlaceholder menggunakan metode POST.
+              Data akan dikirim ke JSONPlaceholder menggunakan axios.
             </Text>
           </View>
         </ScrollView>

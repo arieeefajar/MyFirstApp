@@ -8,9 +8,10 @@ import {
 } from "@/constants/tokens";
 import { isValidEmail } from "@/utils/helpers";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -23,13 +24,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { reason } = useLocalSearchParams<{ reason?: string }>();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleLogin = () => {
+  const sessionMessage =
+    reason === "expired"
+      ? "Sesi login telah berakhir. Silakan masuk kembali."
+      : reason === "unauthorized"
+        ? "Akses ditolak. Silakan login kembali."
+        : "";
+
+  const handleLogin = async () => {
+    if (submitting) return;
+
     if (email.trim() === "" || password === "") {
       setError("Email dan password tidak boleh kosong");
       return;
@@ -39,14 +51,23 @@ export default function LoginScreen() {
       return;
     }
 
-    const result = login(email, password);
-    if (!result.ok) {
-      setError(result.error ?? "Login gagal");
-      return;
-    }
+    setSubmitting(true);
 
-    setError("");
-    router.replace("/(tabs)/beranda");
+    try {
+      const result = await login(email, password);
+
+      if (!result.ok) {
+        setError(result.error ?? "Login gagal");
+        return;
+      }
+
+      setError("");
+      router.replace("/(tabs)/beranda");
+    } catch {
+      setError("Terjadi kesalahan saat login. Coba lagi.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -60,6 +81,17 @@ export default function LoginScreen() {
         </View>
         <Text style={styles.title}>Selamat Datang</Text>
         <Text style={styles.subtitle}>Masuk untuk mulai belajar</Text>
+
+        {sessionMessage !== "" && (
+          <View style={styles.sessionBanner}>
+            <Ionicons
+              name="alert-circle-outline"
+              size={20}
+              color={COLORS.error}
+            />
+            <Text style={styles.sessionText}>{sessionMessage}</Text>
+          </View>
+        )}
 
         <View style={styles.card}>
           <Text style={styles.label}>Email</Text>
@@ -105,8 +137,16 @@ export default function LoginScreen() {
 
           {error !== "" && <Text style={styles.errorText}>{error}</Text>}
 
-          <Pressable style={styles.loginBtn} onPress={handleLogin}>
-            <Text style={styles.loginBtnText}>Masuk</Text>
+          <Pressable
+            style={[styles.loginBtn, submitting && styles.loginBtnDisabled]}
+            onPress={handleLogin}
+            disabled={submitting}
+          >
+            {submitting ? (
+              <ActivityIndicator color={COLORS.text.white} />
+            ) : (
+              <Text style={styles.loginBtnText}>Masuk</Text>
+            )}
           </Pressable>
 
           <Text style={styles.hint}>Demo: lorem@example.com / lorem123</Text>
@@ -142,6 +182,23 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: SPACING.xs,
     marginBottom: SPACING.xxl,
+  },
+  sessionBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+    padding: SPACING.md,
+    backgroundColor: "#FEF2F2",
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: "#FECACA",
+  },
+  sessionText: {
+    flex: 1,
+    fontSize: FONT_SIZES.sm,
+    lineHeight: 18,
+    color: COLORS.error,
   },
   card: {
     backgroundColor: COLORS.background.white,
@@ -197,6 +254,9 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
     alignItems: "center",
     marginTop: SPACING.sm,
+  },
+  loginBtnDisabled: {
+    opacity: 0.7,
   },
   loginBtnText: {
     color: COLORS.text.white,

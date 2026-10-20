@@ -1,3 +1,10 @@
+import { login as loginRequest } from "@/services/api/authApi";
+import {
+  clearSession,
+  setSession,
+} from "@/services/api/authSession";
+import type { LoginResult } from "@/types/auth";
+import type { User } from "@/types";
 import React, {
   createContext,
   useCallback,
@@ -6,25 +13,14 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { User } from "@/types";
-
-interface LoginResult {
-  ok: boolean;
-  error?: string;
-}
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => LoginResult;
+  login: (email: string, password: string) => Promise<LoginResult>;
   logout: () => void;
 }
-
-// Kredensial dummy untuk materi pembelajaran (tanpa backend)
-const DUMMY_EMAIL = "lorem@example.com";
-const DUMMY_PASSWORD = "lorem123";
-const DUMMY_NAMA = "Lorem";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -32,29 +28,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Restore session (in-memory, langsung selesai karena tanpa storage)
+  // Sesi masih in-memory. Token disimpan di authSession untuk interceptor.
   useEffect(() => {
+    clearSession();
     setIsLoading(false);
   }, []);
 
   const login = useCallback(
-    (email: string, password: string): LoginResult => {
-      const normalizedEmail = email.trim().toLowerCase();
+    async (email: string, password: string): Promise<LoginResult> => {
+      const result = await loginRequest(email, password);
 
-      if (
-        normalizedEmail !== DUMMY_EMAIL ||
-        password !== DUMMY_PASSWORD
-      ) {
-        return { ok: false, error: "Email atau password salah" };
+      if (result.ok) {
+        setSession(result.session);
+        setUser(result.user);
       }
 
-      setUser({ nama: DUMMY_NAMA, email: DUMMY_EMAIL });
-      return { ok: true };
+      return result;
     },
-    []
+    [],
   );
 
   const logout = useCallback(() => {
+    clearSession();
     setUser(null);
   }, []);
 
@@ -66,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       login,
       logout,
     }),
-    [user, isLoading, login, logout]
+    [user, isLoading, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

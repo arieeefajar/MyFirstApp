@@ -4,6 +4,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import AuthSessionListener from "@/components/AuthSessionListener";
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
@@ -11,6 +12,7 @@ export default function RootLayout() {
     <Provider store={store}>
       <ThemeProvider>
         <AuthProvider>
+          <AuthSessionListener />
           <CartProvider>
             <NotificationProvider>
               <Stack
