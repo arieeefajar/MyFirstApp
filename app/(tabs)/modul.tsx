@@ -364,6 +364,13 @@ const LESSONS: LessonCategory[] = [
         type: "materi",
       },
       {
+        title: "Pencarian User (Axios)",
+        desc: "Membatalkan request lama saat mengetik cepat",
+        path: "/09-integrasi-api/axios/PencarianScreen",
+        icon: "search-outline",
+        type: "materi",
+      },
+      {
         title: "Buat Post (Axios)",
         desc: "Mengirim post baru melalui service userApi",
         path: "/09-integrasi-api/axios/BuatPostScreen",
