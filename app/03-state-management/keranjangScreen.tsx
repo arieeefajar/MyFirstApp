@@ -1,3 +1,13 @@
+import {
+  BORDER_RADIUS,
+  COLORS,
+  FONT_SIZES,
+  SHADOWS,
+  SPACING,
+} from "@/constants/tokens";
+import { CartItem, useCart } from "@/context/CartContext";
+import { useTheme } from "@/context/ThemeContext";
+import { formatRupiah } from "@/utils/helpers";
 import { useCallback, useMemo } from "react";
 import {
   FlatList,
@@ -8,10 +18,6 @@ import {
   View,
 } from "react-native";
 import ModuleHeader from "../../components/ModuleHeader";
-import { CartItem, useCart } from "@/context/CartContext";
-import { useTheme } from "@/context/ThemeContext";
-import { formatRupiah } from "@/utils/helpers";
-import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from "@/constants/tokens";
 
 export default function KeranjangScreen() {
   const { items, tambahItem, kurangItem, hapusItem } = useCart();
@@ -19,33 +25,37 @@ export default function KeranjangScreen() {
 
   const totalJumlah = useMemo(
     () => items.reduce((total, item) => total + (item.quantity || 1), 0),
-    [items]
+    [items],
   );
 
   const totalHarga = useMemo(
-    () => items.reduce((total, item) => total + item.harga * (item.quantity || 1), 0),
-    [items]
+    () =>
+      items.reduce(
+        (total, item) => total + item.harga * (item.quantity || 1),
+        0,
+      ),
+    [items],
   );
 
   const handleAddItem = useCallback(
     (item: CartItem) => {
       tambahItem({ id: item.id, nama: item.nama, harga: item.harga });
     },
-    [tambahItem]
+    [tambahItem],
   );
 
   const handleRemoveItem = useCallback(
     (id: string) => {
       kurangItem(id);
     },
-    [kurangItem]
+    [kurangItem],
   );
 
   const handleDeleteItem = useCallback(
     (id: string) => {
       hapusItem(id);
     },
-    [hapusItem]
+    [hapusItem],
   );
 
   const renderItem: ListRenderItem<CartItem> = useCallback(
@@ -58,7 +68,7 @@ export default function KeranjangScreen() {
               {item.nama}
             </Text>
             <Text style={styles.price}>{formatRupiah(item.harga)}</Text>
-            
+
             <View style={styles.qtyRow}>
               <View style={styles.qtyControl}>
                 <TouchableOpacity
@@ -78,7 +88,7 @@ export default function KeranjangScreen() {
                 </TouchableOpacity>
               </View>
             </View>
-            
+
             <Text
               style={[styles.subtotalText, gelap && styles.subtotalTextDark]}
             >
@@ -96,7 +106,7 @@ export default function KeranjangScreen() {
         </View>
       );
     },
-    [handleAddItem, handleRemoveItem, handleDeleteItem, gelap]
+    [handleAddItem, handleRemoveItem, handleDeleteItem, gelap],
   );
 
   const keyExtractor = useCallback((item: CartItem) => item.id, []);
@@ -106,8 +116,8 @@ export default function KeranjangScreen() {
       <ModuleHeader
         title="Keranjang Belanja"
         subtitle="Membaca dan menghapus data dari CartContext"
-        category="03. State Management"
-        color={COLORS.modules.state}
+        category="05. State Management Lanjut"
+        color={COLORS.modules.state_lanjut}
         gelap={gelap}
       />
       <View style={styles.container}>
@@ -123,9 +133,7 @@ export default function KeranjangScreen() {
         ) : (
           <>
             <View style={[styles.totalBox, gelap && styles.totalBoxDark]}>
-              <Text
-                style={[styles.totalLabel, gelap && styles.totalLabelDark]}
-              >
+              <Text style={[styles.totalLabel, gelap && styles.totalLabelDark]}>
                 Total ({items.length} produk, {totalJumlah} item)
               </Text>
               <Text style={styles.totalValue}>{formatRupiah(totalHarga)}</Text>
@@ -146,15 +154,15 @@ export default function KeranjangScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { 
-    flex: 1, 
-    backgroundColor: COLORS.background.light 
+  screen: {
+    flex: 1,
+    backgroundColor: COLORS.background.light,
   },
   screenDark: {
     backgroundColor: COLORS.background.dark,
   },
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
     padding: SPACING.lg,
   },
   listContent: {
@@ -166,17 +174,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: SPACING.xs,
   },
-  emptyText: { 
-    color: COLORS.text.primary, 
-    fontSize: FONT_SIZES.lg, 
-    fontWeight: "bold" 
+  emptyText: {
+    color: COLORS.text.primary,
+    fontSize: FONT_SIZES.lg,
+    fontWeight: "bold",
   },
   emptyTextDark: {
     color: "#F1F5F9",
   },
-  emptySubText: { 
-    color: COLORS.text.tertiary, 
-    fontSize: FONT_SIZES.md 
+  emptySubText: {
+    color: COLORS.text.tertiary,
+    fontSize: FONT_SIZES.md,
   },
   totalBox: {
     backgroundColor: COLORS.background.white,
@@ -191,17 +199,17 @@ const styles = StyleSheet.create({
   totalBoxDark: {
     backgroundColor: "#1E293B",
   },
-  totalLabel: { 
-    fontSize: FONT_SIZES.md, 
-    color: COLORS.text.secondary 
+  totalLabel: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.text.secondary,
   },
   totalLabelDark: {
     color: "#94A3B8",
   },
-  totalValue: { 
-    fontSize: FONT_SIZES.xl, 
-    fontWeight: "bold", 
-    color: COLORS.modules.state 
+  totalValue: {
+    fontSize: FONT_SIZES.xl,
+    fontWeight: "bold",
+    color: COLORS.modules.state,
   },
   card: {
     backgroundColor: COLORS.background.white,
@@ -218,18 +226,18 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: SPACING.md,
   },
-  title: { 
-    fontSize: FONT_SIZES.lg, 
+  title: {
+    fontSize: FONT_SIZES.lg,
     fontWeight: "bold",
     color: COLORS.text.primary,
   },
   titleDark: {
     color: "#F1F5F9",
   },
-  price: { 
-    fontSize: FONT_SIZES.md, 
-    color: COLORS.modules.state, 
-    fontWeight: "600", 
+  price: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.modules.state,
+    fontWeight: "600",
     marginTop: SPACING.xs,
   },
   qtyRow: {
@@ -255,11 +263,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  qtyBtnText: { 
-    fontSize: FONT_SIZES.lg, 
-    fontWeight: "bold", 
-    color: COLORS.text.white, 
-    lineHeight: 18 
+  qtyBtnText: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: "bold",
+    color: COLORS.text.white,
+    lineHeight: 18,
   },
   qtyText: {
     fontSize: FONT_SIZES.sm,
@@ -276,14 +284,14 @@ const styles = StyleSheet.create({
   subtotalTextDark: {
     color: "#94A3B8",
   },
-  removeBtn: { 
-    backgroundColor: COLORS.error, 
-    padding: SPACING.sm, 
+  removeBtn: {
+    backgroundColor: COLORS.error,
+    padding: SPACING.sm,
     borderRadius: BORDER_RADIUS.md,
   },
-  removeBtnText: { 
-    color: COLORS.text.white, 
-    fontSize: FONT_SIZES.sm, 
-    fontWeight: "bold" 
+  removeBtnText: {
+    color: COLORS.text.white,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: "bold",
   },
 });
